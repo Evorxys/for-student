@@ -18,8 +18,9 @@ import {
   HStack,
   Image,
   Stack,
+  useToast, // Add import for useToast
 } from "@chakra-ui/react";
-import { RiCameraFill, RiCameraOffFill, RiRefreshFill } from "react-icons/ri";
+import { RiCameraFill, RiCameraOffFill, RiRefreshFill, RiMicFill, RiMicOffFill } from "react-icons/ri"; // Add import for microphone off icon
 
 const SOCKET_URL = "https://websocket-server-teacher-student.onrender.com";
 
@@ -33,6 +34,44 @@ export default function Home() {
   const [inputText, setInputText] = useState("");
   const [teacherMessages, setTeacherMessages] = useState("");
   const [studentMessages, setStudentMessages] = useState([]);
+  const [isListening, setIsListening] = useState(false); // Add state for microphone listening
+  const recognitionRef = useRef(null); // Add ref for speech recognition
+  const toast = useToast(); // Initialize toast
+
+  const shortcuts = [
+    "Thank you",
+    "You're welcome",
+    "Good morning",
+    "Good afternoon",
+    "Hi",
+    "Hello",
+    "I have a question",
+    "Can I go to the bathroom",
+    "Can you repeat that?",
+    "I don't understand",
+    "Can you help me?",
+    "What is the homework?",
+    "When is the test?",
+    "Can I borrow a pencil?",
+    "Can I sit here?",
+    "What page are we on?",
+    "Can I have more time?",
+    "Can I go to the nurse?",
+    "Can I get a drink of water?",
+    "Can I go to the library?",
+  ];
+
+  const [filteredShortcuts, setFilteredShortcuts] = useState(shortcuts);
+
+  function addShortcutMessage(message) {
+    setInputText(message);
+  }
+
+  function handleInputChange(e) {
+    const value = e.target.value;
+    setInputText(value);
+    setFilteredShortcuts(shortcuts.filter(shortcut => shortcut.toLowerCase().includes(value.toLowerCase())));
+  }
 
   useEffect(() => {
     socket.current = io(SOCKET_URL);
@@ -70,6 +109,34 @@ useEffect(() => {
   };
 }, []);
 
+useEffect(() => {
+  if ("webkitSpeechRecognition" in window) {
+    const recognition = new window.webkitSpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event) => {
+      let interimTranscript = "";
+      let finalTranscript = "";
+
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
+      }
+
+      setInputText((prevText) => prevText + finalTranscript);
+    };
+
+    recognitionRef.current = recognition;
+  } else {
+    console.warn("Speech recognition is not supported in this browser.");
+  }
+}, []);
+
   async function runHandpose() {
     const net = await handpose.load();
     setInterval(() => {
@@ -88,55 +155,68 @@ useEffect(() => {
       canvasRef.current.width = videoWidth;
       canvasRef.current.height = videoHeight;
 
-      const hands = await net.estimateHands(video);
+      try {
+        const hands = await net.estimateHands(video);
 
-      if (hands.length > 0) {
-        const GE = new fp.GestureEstimator([
-          Handsigns.aSign,
-          Handsigns.bSign,
-          Handsigns.cSign,
-          Handsigns.dSign,
-          Handsigns.eSign,
-          Handsigns.fSign,
-          Handsigns.gSign,
-          Handsigns.hSign,
-          Handsigns.iSign,
-          Handsigns.jSign,
-          Handsigns.kSign,
-          Handsigns.lSign,
-          Handsigns.mSign,
-          Handsigns.nSign,
-          Handsigns.oSign,
-          Handsigns.pSign,
-          Handsigns.qSign,
-          Handsigns.rSign,
-          Handsigns.sSign,
-          Handsigns.tSign,
-          Handsigns.uSign,
-          Handsigns.vSign,
-          Handsigns.wSign,
-          Handsigns.xSign,
-          Handsigns.ySign,
-          Handsigns.zSign,
-        ]);
+        if (hands.length > 0) {
+          // Add a small delay before predicting
+          await new Promise(resolve => setTimeout(resolve, 100));
 
-        const estimatedGestures = await GE.estimate(hands[0].landmarks, 6.5);
+          const GE = new fp.GestureEstimator([
+            Handsigns.aSign,
+            Handsigns.bSign,
+            Handsigns.cSign,
+            Handsigns.dSign,
+            Handsigns.eSign,
+            Handsigns.fSign,
+            Handsigns.gSign,
+            Handsigns.hSign,
+            Handsigns.iSign,
+            Handsigns.jSign,
+            Handsigns.kSign,
+            Handsigns.lSign,
+            Handsigns.mSign,
+            Handsigns.nSign,
+            Handsigns.oSign,
+            Handsigns.pSign,
+            Handsigns.qSign,
+            Handsigns.rSign,
+            Handsigns.sSign,
+            Handsigns.tSign,
+            Handsigns.uSign,
+            Handsigns.vSign,
+            Handsigns.wSign,
+            Handsigns.xSign,
+            Handsigns.ySign,
+            Handsigns.zSign,
+            Handsigns.helloSign, // Ensure helloSign is included
+            Handsigns.thankYouSign,
+            Handsigns.yesSign, // Ensure yesSign is included
+            Handsigns.okSign, // Ensure okSign is included
+            Handsigns.thumbsDownSign, // Ensure thumbsDownSign is included
+            Handsigns.iLoveYouSign, // Ensure iLoveYouSign is included
+          ]);
 
-        if (estimatedGestures.gestures.length > 0) {
-          const maxConfidenceGesture = estimatedGestures.gestures.reduce(
-            (prev, current) => (prev.score > current.score ? prev : current),
-            estimatedGestures.gestures[0]
-          );
+          const estimatedGestures = await GE.estimate(hands[0].landmarks, 6.5);
 
-          if (maxConfidenceGesture && maxConfidenceGesture.name) {
-            setDetectedGesture(maxConfidenceGesture.name);
-            setInputText((prevText) => prevText + maxConfidenceGesture.name);
+          if (estimatedGestures.gestures.length > 0) {
+            const maxConfidenceGesture = estimatedGestures.gestures.reduce(
+              (prev, current) => (prev.score > current.score ? prev : current),
+              estimatedGestures.gestures[0]
+            );
+
+            if (maxConfidenceGesture && maxConfidenceGesture.name) {
+              setDetectedGesture(maxConfidenceGesture.name);
+              setInputText((prevText) => prevText + maxConfidenceGesture.name);
+            }
           }
         }
-      }
 
-      const ctx = canvasRef.current.getContext("2d");
-      drawHand(hands, ctx);
+        const ctx = canvasRef.current.getContext("2d");
+        drawHand(hands, ctx);
+      } catch (error) {
+        console.error("Error detecting hand gestures:", error);
+      }
     }
   }
 
@@ -162,6 +242,34 @@ useEffect(() => {
       }
 
       setInputText("");
+    }
+  }
+
+  function startListening() {
+    if (!isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.start();
+        console.log("Microphone listening started");
+        setIsListening(true);
+        toast({
+          title: "Microphone is now listening.",
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } else {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        console.log("Microphone listening stopped");
+        setIsListening(false);
+        toast({
+          title: "Microphone has stopped listening.",
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     }
   }
 
@@ -224,6 +332,7 @@ useEffect(() => {
 
           {/* Camera and Gesture Display */}
           <HStack justifyContent="center">
+            {/* Camera and Gesture Display */}
             <Box
               position="relative"
               border="2px solid #61dafb"
@@ -270,7 +379,7 @@ useEffect(() => {
             <Input
               placeholder="Type your message..."
               value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
+              onChange={handleInputChange}
               flex={1}
               bg="gray.600"
               color="white"
@@ -290,7 +399,33 @@ useEffect(() => {
               aria-label="Reset Input"
               onClick={resetInput}
             />
+            <IconButton
+              icon={isListening ? <RiMicOffFill /> : <RiMicFill />}
+              colorScheme="red"
+              aria-label="Toggle Listening"
+              onClick={startListening}
+            />
           </HStack>
+
+          {/* Filtered Shortcuts */}
+          <Box
+            bg="gray.700"
+            borderRadius="md"
+            p={4}
+            maxHeight="150px"
+            overflowY="auto"
+            mt={2}
+            border="2px solid #61dafb"
+            borderRadius="15px"
+          >
+            <HStack spacing={2} wrap="wrap">
+              {filteredShortcuts.map((shortcut, index) => (
+                <Button key={index} onClick={() => addShortcutMessage(shortcut)} colorScheme="teal" size="sm">
+                  {shortcut}
+                </Button>
+              ))}
+            </HStack>
+          </Box>
         </VStack>
       </Box>
     </ChakraProvider>

@@ -49,3 +49,25 @@ ySign.addDirection(Finger.Ring, FingerDirection.VerticalUp, 0.70);
 ySign.addCurl(Finger.Pinky, FingerCurl.NoCurl, 1);
 ySign.addDirection(Finger.Pinky, FingerDirection.DiagonalUpLeft, 0.70);
 
+export const yesSign = new GestureDescription('');
+
+// Thumb
+yesSign.addCurl(Finger.Thumb, FingerCurl.NoCurl, 1.0);
+yesSign.addDirection(Finger.Thumb, FingerDirection.VerticalUp, 0.75);
+
+// Index
+yesSign.addCurl(Finger.Index, FingerCurl.NoCurl, 1.0);
+yesSign.addDirection(Finger.Index, FingerDirection.VerticalUp, 0.75);
+
+// Middle
+yesSign.addCurl(Finger.Middle, FingerCurl.NoCurl, 1.0);
+yesSign.addDirection(Finger.Middle, FingerDirection.VerticalUp, 0.75);
+
+// Ring
+yesSign.addCurl(Finger.Ring, FingerCurl.FullCurl, 1.0);
+yesSign.addDirection(Finger.Ring, FingerDirection.VerticalUp, 0.75);
+
+// Pinky
+yesSign.addCurl(Finger.Pinky, FingerCurl.FullCurl, 1.0);
+yesSign.addDirection(Finger.Pinky, FingerDirection.VerticalUp, 0.75);
+

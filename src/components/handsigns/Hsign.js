@@ -49,3 +49,25 @@ hSign.addDirection(Finger.Ring, FingerDirection.HorizontalRight, 0.70);
 hSign.addCurl(Finger.Pinky, FingerCurl.FullCurl, 1);
 hSign.addDirection(Finger.Pinky, FingerDirection.HorizontalRight, 0.70);
 
+export const helloSign = new GestureDescription('Hello');
+
+// Thumb
+helloSign.addCurl(Finger.Thumb, FingerCurl.NoCurl, 1.0);
+helloSign.addDirection(Finger.Thumb, FingerDirection.HorizontalRight, 0.75);
+
+// Index
+helloSign.addCurl(Finger.Index, FingerCurl.NoCurl, 1.0);
+helloSign.addDirection(Finger.Index, FingerDirection.VerticalUp, 0.75);
+
+// Middle
+helloSign.addCurl(Finger.Middle, FingerCurl.NoCurl, 1.0);
+helloSign.addDirection(Finger.Middle, FingerDirection.VerticalUp, 0.75);
+
+// Ring
+helloSign.addCurl(Finger.Ring, FingerCurl.NoCurl, 1.0);
+helloSign.addDirection(Finger.Ring, FingerDirection.VerticalUp, 0.75);
+
+// Pinky
+helloSign.addCurl(Finger.Pinky, FingerCurl.NoCurl, 1.0);
+helloSign.addDirection(Finger.Pinky, FingerDirection.VerticalUp, 0.75);
+

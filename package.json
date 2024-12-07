@@ -1,5 +1,5 @@
 {
-  "homepage": "https://Evorxys.github.io/student-web-app",
+  "homepage": "https://Evorxys.github.io/for-student",
   "name": "student-app",
   "version": "0.1.0",
   "private": true,
@@ -47,6 +47,6 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.16.7",
-    "gh-pages": "^6.1.1"
+    "gh-pages": "^6.2.0"
   }
 }
