@@ -49,7 +49,7 @@ ySign.addDirection(Finger.Ring, FingerDirection.VerticalUp, 0.70);
 ySign.addCurl(Finger.Pinky, FingerCurl.NoCurl, 1);
 ySign.addDirection(Finger.Pinky, FingerDirection.DiagonalUpLeft, 0.70);
 
-export const yesSign = new GestureDescription('');
+export const yesSign = new GestureDescription('Excuse Me ');
 
 // Thumb
 yesSign.addCurl(Finger.Thumb, FingerCurl.NoCurl, 1.0);

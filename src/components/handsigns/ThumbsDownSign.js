@@ -1,7 +1,7 @@
 
 import { Finger, FingerCurl, FingerDirection, GestureDescription } from 'fingerpose';
 
-export const thumbsDownSign = new GestureDescription('Thumbs Down');
+export const thumbsDownSign = new GestureDescription('Thumbs Down ');
 
 // Thumb
 thumbsDownSign.addCurl(Finger.Thumb, FingerCurl.NoCurl, 1.0);

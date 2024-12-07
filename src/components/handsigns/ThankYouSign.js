@@ -1,7 +1,7 @@
 
 import { GestureDescription, Finger, FingerCurl, FingerDirection } from 'fingerpose';
 
-export const thankYouSign = new GestureDescription('Thank You');
+export const thankYouSign = new GestureDescription('Thank You ');
 
 // Thumb
 thankYouSign.addCurl(Finger.Thumb, FingerCurl.NoCurl, 1.0);
